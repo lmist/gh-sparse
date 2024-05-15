@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+from pathlib import Path
+
+import typer as ty
+from result import is_err
+
+from lib import Gh
+from typings import get_settings
+
+settings_candidate = get_settings(Path("lmist.env"))
+
+if is_err(settings_candidate):
+    print("error getting settings")
+    print(settings_candidate.err())
+    exit(1)
+
+settings = settings_candidate.ok_value
+
+gh = Gh(settings)
+
+cli = ty.Typer(
+    name="sparse"
+)
+
+@cli.command()
+def main():
+    for r in gh.g.get_user().get_repos():
+        print(r)
+
+
+
+if __name__ == "__main__":
+    cli()
