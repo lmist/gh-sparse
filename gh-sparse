@@ -8,6 +8,12 @@ from result import is_err
 from lib import Gh
 from typings import get_settings
 
+from rich.console import Console
+from rich.markdown import Markdown
+
+console = Console()
+
+
 settings_candidate = get_settings(Path("lmist.env"))
 
 if is_err(settings_candidate):
@@ -25,9 +31,11 @@ cli = ty.Typer(
 
 @cli.command()
 def main():
-    for r in gh.g.get_user().get_repos():
-        print(r)
-
+    repo = gh.g.get_repo('whoislou/full-stack-fastapi-template')
+    contents = repo.get_contents('README.md')
+    decoded = contents.decoded_content.decode('utf-8')
+    md = Markdown(decoded)
+    console.print(md)
 
 
 if __name__ == "__main__":
